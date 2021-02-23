@@ -8,13 +8,14 @@ Heroku platform and exports a `.csv` file with results.
 
 ## Usage
 ### Configuration
-You will need to create a postgreSQL database on Heroku or any other platform and enter the authentication credentials 
+You will need to create a postgreSQL database on [Heroku](https://dashboard.heroku.com/) or any other platform and enter the authentication credentials 
 into `config.py` file. 
 
 ### Initialisation
 `from scraper import scraper`
 
 ### Scraper functions
+These functions will be executed by running `main.py`. Feel free to edit the variables to suit your requirements. 
  - `drop_tables()` - Drops categories and items tables. Handle with care - this will destroy your data!
  - `create_tables()` - Creates categories and items tables and sets up foreign keys.
  - `fetch_url(genre, number_of_examples)` - Iterates through pages required to collect a specified number of examples. 
