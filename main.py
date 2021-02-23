@@ -2,15 +2,11 @@ from scraper import database
 from scraper import scraper
 from bs4 import BeautifulSoup
 
+
 if __name__ == '__main__':
-    print("Let the fun begin")
-
-    response = scraper.soup_init("https://clone.nl/instock/tag/electronix")
-    print(response)
-
-    soup = BeautifulSoup(response.content, "html.parser")
-    for title in soup.select("div.description > h2 > a"):
-        print(title.text)
+    # scraper.fetch_data("techno", 100)
+    # el_df = scraper.fetch_data("electronix", 100)
+    # print(el_df)
 
     # create_categories = '''
     # CREATE TABLE categories (
@@ -31,9 +27,9 @@ if __name__ == '__main__':
 
     # insert_category = "INSERT INTO categories(category) VALUES('techno');"
     #
-    # list_categories = "SELECT * FROM categories"
+    list_categories = "SELECT * FROM categories"
     #
-    # # database.execute_query(insert_category)
-    # rows = database.fetch_data(list_categories)
+    # database.execute_query(insert_category)
+    rows = database.fetch_data(list_categories)
     # for row in rows:
     #     print(row)

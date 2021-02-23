@@ -1,15 +1,15 @@
-import sys
+import config
 from psycopg2 import connect, OperationalError
 
 
 def connect_to_database():
     try:
         connection = connect(
-            host="ec2-54-216-185-51.eu-west-1.compute.amazonaws.com",
-            database="d8lj1gc9foqv0k",
-            user="kprzglcktxqeai",
-            password="c9db97b11715d85b4f03f5ff2ce2d3e247cbed18305fcc4808e42fa0c97eb8fd",
-            port="5432"
+            host=config.HOST,
+            database=config.DB,
+            user=config.USER,
+            password=config.PASSWORD,
+            port=config.PORT
         )
         print("Connecting to the db...")
         return connection
