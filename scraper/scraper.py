@@ -1,12 +1,20 @@
+from psycopg2 import connect, OperationalError
+from datetime import datetime
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import config
-from psycopg2 import connect, OperationalError
-from datetime import datetime
 
 
 def connect_to_database():
+    """
+    Connects to the database. Reads the credentials from config.py.
+
+    Returns postgreSQL database session and a new instance of connection class.
+    By using the connection object you can create a new cursor to execute any SQL statements.
+
+    Returns error if connection is unsuccessful.
+    """
     try:
         connection = connect(
             host=config.HOST,
@@ -22,6 +30,12 @@ def connect_to_database():
 
 
 def execute_query(query: str) -> None:
+    """
+    Executes SQL query. To be used for queries which do not return any results, for example:
+    INSERT, UPDATE, CREATE, ALTER, DROP, etc.
+
+    :param query: SQL query
+    """
     connection = connect_to_database()
     cursor = connection.cursor()
     cursor.execute(query)
@@ -29,13 +43,22 @@ def execute_query(query: str) -> None:
 
 
 def execute_query_and_fetch(query: str) -> list:
+    """
+    Executes SQL query and fetches a response. To be used for queries whihc return results, for example: SELECT.
+
+    :param query: SQL query
+    :return: array
+    """
     connection = connect_to_database()
     cursor = connection.cursor()
     cursor.execute(query)
     return cursor.fetchall()
 
 
-def drop_tables():
+def drop_tables() -> None:
+    """
+    Drops categories and items tables. Handle with care - this will destroy your data!
+    """
     execute_query('''
     DROP TABLE IF EXISTS categories CASCADE;
     DROP TABLE IF EXISTS items CASCADE;
@@ -43,6 +66,9 @@ def drop_tables():
 
 
 def create_tables():
+    """
+    Creates categories and items tables and foreign keys.
+    """
     execute_query('''
         CREATE TABLE IF NOT EXISTS categories (
             id SERIAL PRIMARY KEY,
@@ -52,7 +78,7 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS items (
             id SERIAL PRIMARY KEY,
             category_id INT,
-            artist VARCHAR(64),
+            artist VARCHAR(255),
             title VARCHAR(255),
             label VARCHAR(255),
             format VARCHAR(64),
@@ -67,6 +93,12 @@ def create_tables():
 
 
 def load_url(url: str):
+    """
+    Loads and parses an url using BeautifulSoup Python library.
+
+    :param url: str, valid url, for example: https://turingcollege.com/
+    :return: BeautifulSoup object
+    """
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
@@ -82,6 +114,20 @@ def load_url(url: str):
 
 
 def fetch_url(genre: str, number_of_examples: int) -> pd.DataFrame:
+    """
+    Iterates through pages required to collect a specified number of examples.
+
+    :param genre: str genre from Clone Records website. Available genres:
+    Acid, Africa, Ambient, Bass, Belgium, Berlin, Boogie, Brazil, Breakbeat, Breaks,
+    Chicago, Classical, Detroit, Disco, Drum & Bass, Drum and Bass, Dub, Dubstep, EBM,
+    Electro, Electronix, Folk, Funk, Hardcore, Hip Hop, House, Indie, Italo, Italy, Jazz,
+    Jungle, Library, Merchandise, Minimal, New York, Nordic, Outernational, Pop, Rave, Reggae,
+    Rock, Soul, Soul Jazz, Soundtrack, Staff Pick Of The Week, Techno, Ticket, Trance, Tribal,
+    Vintage, Wave
+
+    :param number_of_examples: int number of examples to fetch. Assumes there are 50 items per page.
+    :return: pandas DataFrame
+    """
     artists, titles, labels, formats, prices, item_urls, thumb_urls = ([] for i in range(7))
     items_per_page = 50
     pages_to_fetch = int(number_of_examples / items_per_page)
@@ -111,6 +157,12 @@ def fetch_url(genre: str, number_of_examples: int) -> pd.DataFrame:
 
 
 def insert_dataframe_into_db(dataframe: pd.DataFrame, category: str) -> None:
+    """
+    Inserts dataframe into the database.
+
+    :param dataframe: pandas Dataframe
+    :param category: category of the data
+    """
     print("Inserting data into the database")
     execute_query(f'''
         INSERT INTO categories(category) 
@@ -130,6 +182,11 @@ def insert_dataframe_into_db(dataframe: pd.DataFrame, category: str) -> None:
 
 
 def export_to_csv():
+    """
+    Connects to the database, fetches the data and exports the data to csv file.
+
+    :return: csv file
+    """
     print("Exporting to csv")
     catalog = execute_query_and_fetch('''
         SELECT items.id, artist, title, label, category, format, price, item_url, thumb_url 
