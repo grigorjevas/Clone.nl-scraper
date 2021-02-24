@@ -97,14 +97,21 @@ class CloneScraper:
             number_of_examples = 50
 
         pages_to_fetch = math.ceil(number_of_examples / self.__items_per_page)
+        artists, titles, labels, formats, prices, item_urls, thumb_urls = ([] for i in range(7))
         for i in range(1, pages_to_fetch + 1):
             print(f"Fetching page {i}/{pages_to_fetch} from {genre} releases")
             url = f"http://clone.nl/instock/genre/{genre}?sort=id&order=desc&page={i}"
             soup = CloneScraper.load_url(url)
             parser = CloneParser(soup)
+            artists.extend(parser.parse_artists)
+            titles.extend(parser.parse_titles)
+            labels.extend(parser.parse_labels)
+            formats.extend(parser.parse_formats)
+            prices.extend(parser.parse_prices)
+            item_urls.extend(parser.parse_item_urls)
+            thumb_urls.extend(parser.parse_thumb_urls)
 
-        records_data = list(zip(parser.parse_artists, parser.parse_titles, parser.parse_labels, parser.parse_formats,
-                                parser.parse_prices, parser.parse_item_urls, parser.parse_thumb_urls))
+        records_data = list(zip(artists, titles, labels, formats, prices, item_urls, thumb_urls))
         return pd.DataFrame(records_data,
                             columns=["artists", "titles", "labels", "formats", "prices", "item_urls",
                                      "thumb_urls"])
@@ -198,37 +205,37 @@ class CloneParser:
 
     @property
     def parse_artists(self) -> list:
-        return list([artist.text.replace("'", "''")
-                     for artist in self.__soup.select("div.description > h2 > a")])
+        return ([artist.text.replace("'", "''")
+                    for artist in self.__soup.select("div.description > h2 > a")])
 
     @property
     def parse_titles(self) -> list:
-        return list([title.text.replace("'", "''")
-                     for title in self.__soup.select("div.description > h3 > a")])
+        return ([title.text.replace("'", "''")
+                for title in self.__soup.select("div.description > h3 > a")])
 
     @property
     def parse_labels(self) -> list:
-        return list([label.text.replace("'", "''")
-                     for label in self.__soup.find_all("span", itemprop="recordLabel")])
+        return ([label.text.replace("'", "''")
+                for label in self.__soup.find_all("span", itemprop="recordLabel")])
 
     @property
     def parse_formats(self) -> list:
-        return list([media.text.replace("'", "''")
-                     for media in self.__soup.find_all("span", itemprop="material")])
+        return ([media.text.replace("'", "''")
+                for media in self.__soup.find_all("span", itemprop="material")])
 
     @property
     def parse_prices(self) -> list:
-        return list([price.text.replace(" € ", "").replace(",", ".").replace("remind", "None")
-                     for price in self.__soup.find_all("a", class_="addtocart")])
+        return ([price.text.replace(" € ", "").replace(",", ".").replace("remind", "None")
+                for price in self.__soup.find_all("a", class_="addtocart")])
 
     @property
     def parse_item_urls(self) -> list:
-        return list(["https://clone.nl/" + item_url["href"]
-                     for item_url in self.__soup.select("div.description > h3 > a")])
+        return (["https://clone.nl/" + item_url["href"]
+                for item_url in self.__soup.select("div.description > h3 > a")])
 
     @property
     def parse_thumb_urls(self) -> list:
-        return list([thumb_url["src"]
-                     for thumb_url in self.__soup.select("img.img-responsive")])
+        return ([thumb_url["src"]
+                for thumb_url in self.__soup.select("img.img-responsive")])
 
 
