@@ -4,6 +4,14 @@ from psycopg2 import connect, OperationalError
 
 class Database:
     def __init__(self):
+        """
+        Database class.
+
+        Available methods:
+            * connect
+            * execute_query
+            * execute_query_and_fetch
+        """
         self.__host = config.HOST
         self.__db = config.DB
         self.__user = config.USER
