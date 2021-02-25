@@ -73,8 +73,7 @@ class CloneScraper:
         Chicago, Classical, Detroit, Disco, Drum & Bass, Drum and Bass, Dub, Dubstep, EBM,
         Electro, Electronix, Folk, Funk, Hardcore, Hip Hop, House, Indie, Italo, Italy, Jazz,
         Jungle, Library, Merchandise, Minimal, New York, Nordic, Outernational, Pop, Rave, Reggae,
-        Rock, Soul, Soul Jazz, Soundtrack, Staff Pick Of The Week, Techno, Ticket, Trance, Tribal,
-        Vintage, Wave
+        Rock, Soul, Soul Jazz, Soundtrack, Techno, Ticket, Trance, Tribal, Vintage, Wave
 
         :param number_of_examples: int number of assets to fetch. Assumes there are 50 items per page.
         :return: pandas DataFrame
@@ -85,8 +84,7 @@ class CloneScraper:
             "chicago", "classical", "detroit", "disco", "drum", "&", "bass", "drum", "and", "bass", "dub", "dubstep",
             "ebmelectro", "electronix", "folk", "funk", "hardcore", "hip", "hop", "house", "indie", "italo", "italy",
             "jazzjungle", "library", "merchandise", "minimal", "new", "york", "nordic", "outernational", "pop", "rave",
-            "reggaerock", "soul", "soul", "jazz", "soundtrack", "staff", "pick", "of", "the", "week", "techno",
-            "ticket", "trance", "tribalvintage", "wave"
+            "reggaerock", "soul", "soul", "jazz", "soundtrack", "techno", "ticket", "trance", "tribalvintage", "wave"
         ]
 
         if genre not in possible_genres:
